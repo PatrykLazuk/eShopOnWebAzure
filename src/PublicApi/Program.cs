@@ -20,7 +20,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MinimalApi.Endpoint.Configurations.Extensions;
 using MinimalApi.Endpoint.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -122,7 +121,15 @@ builder.Services.AddSwaggerGen(c =>
             });
 });
 
-builder.Services.AddApplicationInsightsTelemetry();
+
+
+builder.Services.AddApplicationInsightsTelemetry(options =>
+{
+    options.EnableAdaptiveSampling = false;
+    options.EnableQuickPulseMetricStream = false;
+    options.RequestCollectionOptions.TrackExceptions = true;
+
+});
 
 var app = builder.Build();
 

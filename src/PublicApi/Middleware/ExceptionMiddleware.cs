@@ -2,8 +2,12 @@
 using System.Net;
 using System.Threading.Tasks;
 using BlazorShared.Models;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.eShopWeb.ApplicationCore.Exceptions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.eShopWeb.PublicApi.Middleware;
 
@@ -31,6 +35,7 @@ public class ExceptionMiddleware
     private async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
+        var telemetryClient = context.RequestServices.GetRequiredService<TelemetryClient>();
 
         if (exception is DuplicateException duplicationException)
         {
@@ -49,6 +54,12 @@ public class ExceptionMiddleware
                 StatusCode = context.Response.StatusCode,
                 Message = exception.Message
             }.ToString());
+
+            // Track exception with telemetry client
+            var exceptionTelemetry = new ExceptionTelemetry(exception);
+            exceptionTelemetry.Properties.Add("StackTrace", exception.StackTrace);
+            telemetryClient.TrackException(exceptionTelemetry);
         }
     }
+
 }
