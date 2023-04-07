@@ -5,12 +5,14 @@
     <UserSecretsId>5b662463-1efd-4bae-bde4-befe0be3e8ff</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
+    <ApplicationInsightsResourceId>/subscriptions/b3ceac44-6f1d-4c14-98c2-8b56c38db584/resourceGroups/LearningResourceGroup/providers/microsoft.insights/components/PublicApiAppInsight</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Ardalis.ApiEndpoints" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" />
     <PackageReference Include="MinimalApi.Endpoint" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
@@ -21,7 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" >
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

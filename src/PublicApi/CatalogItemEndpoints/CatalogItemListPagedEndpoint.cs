@@ -19,11 +19,12 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
 {
     private readonly IUriComposer _uriComposer;
     private readonly IMapper _mapper;
-
-    public CatalogItemListPagedEndpoint(IUriComposer uriComposer, IMapper mapper)
+    private readonly IAppLogger<CatalogItemListPagedEndpoint> _logger;
+    public CatalogItemListPagedEndpoint(IUriComposer uriComposer, IMapper mapper, IAppLogger<CatalogItemListPagedEndpoint> logger)
     {
         _uriComposer = uriComposer;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public void AddRoute(IEndpointRouteBuilder app)
@@ -52,6 +53,8 @@ public class CatalogItemListPagedEndpoint : IEndpoint<IResult, ListPagedCatalogI
             typeId: request.CatalogTypeId);
 
         var items = await itemRepository.ListAsync(pagedSpec);
+
+        _logger.LogInformation($"{items.Count} items get from database.");
 
         response.CatalogItems.AddRange(items.Select(_mapper.Map<CatalogItemDto>));
         foreach (CatalogItemDto item in response.CatalogItems)
