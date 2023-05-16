@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.eShopWeb.ApplicationCore.Entities.OrderAggregate;
 using Microsoft.eShopWeb.ApplicationCore.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -16,22 +17,22 @@ public interface IOrderItemsReserverRepository
 public class OrderItemsReserverRepository : IOrderItemsReserverRepository
 {
     private readonly IConfiguration _config;
-    private readonly HttpClient _httpClient;
+    private readonly IQueueClient _queueClient;
 
-    public OrderItemsReserverRepository(HttpClient httpClient, IConfiguration config)
+    public OrderItemsReserverRepository(IConfiguration config)
     {
-        _httpClient = httpClient;
         _config = config;
+        var serviceBusConnectionString = _config.GetSection("ServiceBusConnectionString").Value;
+        string queueName = "orderitemreserverqueue";
+
+        _queueClient = new QueueClient(serviceBusConnectionString, queueName);
     }
 
     public async Task SendOrderAsync(Order order)
     {
         var orderJson = JsonSerializer.Serialize(order);
-        var content = new StringContent(orderJson, Encoding.UTF8, "application/json");
+        var message = new Message(Encoding.UTF8.GetBytes(orderJson));
 
-        var orderItemsReserverUrl = _config.GetSection("OrderItemsReserverUrl").Value;
-        var response = await _httpClient.PostAsync(orderItemsReserverUrl, content);
-
-        response.EnsureSuccessStatusCode();
+        await _queueClient.SendAsync(message);
     }
 }
